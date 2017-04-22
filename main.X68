@@ -3,8 +3,8 @@
 * Written by : bisrat belayneh
 * Date       : 4/21/2017
 * Description: Displays welcome, Gets start and end address of memo to be decoded ,Define Out-start-addres,
-               defines valid-flag (1 for code valid 0 for code invalid),defines constants for start and end 
-               address of the program ,Sets out current add to out -start- add, Starts id running instruction
+*               defines valid-flag (1 for code valid 0 for code invalid),defines constants for start and end 
+*               address of the program ,Sets out current add to out -start- add, Starts id running instruction
 *-----------------------------------------------------------
 CR              EQU     $0D                 ASCII code for carriage return
 LF              EQU     $0A                 ASCII code  for line feed  
@@ -34,6 +34,7 @@ IN_END_ADD           ds.b    80        stores program ending memory address
     SIMHALT             ; halt simulator
 
 * Put variables and constants here
+    INCLUDE     'OPCODE_TEST.X68'
 
     END    START        ; last line of source
 
@@ -51,3 +52,8 @@ IN_END_ADD           ds.b    80        stores program ending memory address
 
 
         
+
+*~Font name~Courier New~
+*~Font size~10~
+*~Tab type~1~
+*~Tab size~4~
