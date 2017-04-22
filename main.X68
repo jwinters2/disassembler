@@ -26,9 +26,9 @@ INPUT_FAIL_MSG       dc.b    'Invalid address entered. Please try again.',CR,LF,
 END_ADD_SMALLER_MSG  dc.b    'End address can not be less than starting address',CR,LF,0
 ADD_TOO_SMALL        dc.b    'Address below minimum. enter address greater than or equal to $7000',CR,LF,0
 ADD_TOO_BIG          dc.b    'Address above maximum. enter address less than or equal to $FFFFFFFE',CR,LF,0
-IN_START_ADD         ds.b    80        stores program starting memory address 
-IN_CURRENT_ADD       ds.b    80        stores current memory address
-IN_END_ADD           ds.b    80        stores program ending memory address 
+IN_START_ADD         ds.b    32        stores program starting memory address 
+IN_CURRENT_ADD       ds.b    32        stores current memory address
+IN_END_ADD           ds.b    32        stores program ending memory address 
 
 
     SIMHALT             ; halt simulator
