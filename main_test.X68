@@ -19,7 +19,7 @@ START:                  ; first instruction of program
                 Trap            #15              ; display the string at A1   
 
    
-
+    MOVE.B      #1,IS_VALID ; at the beginning assume the code is valid
 
     MOVE.W      #$3000,IN_START_A
     MOVE.W      IN_START_A,IN_CURR_A
@@ -29,6 +29,7 @@ START:                  ; first instruction of program
     MOVE.W      OUT_START_A,OUT_CURR_A
 
     MOVE.W      #$4E70,$3000
+  * MOVE.W      #$4E70,$3002
     MOVE.W      #$3456,$3002
     MOVE.W      #$4E70,$3004
     MOVE.W      #$4E70,$3006
@@ -65,10 +66,11 @@ END_ADD_SMALLER_MSG  dc.b    'End address can not be less than starting address'
 ADD_TOO_SMALL        dc.b    'Address below minimum. enter address greater than or equal to $7000',CR,LF,0
 ADD_TOO_BIG          dc.b    'Address above maximum. enter address less than or equal to $FFFFFFFE',CR,LF,0
 IN_START_A           ds.w    1        ; stores program starting memory address 
-IN_CURR_A            ds.w    1         ; stores current memory address
-IN_END_A             ds.w    1         ; stores program ending memory address 
-OUT_START_A          ds.w    1         ; stores program ending memory address 
-OUT_CURR_A           ds.w    1         ; stores current memory address
+IN_CURR_A            ds.w    1        ; stores current memory address
+IN_END_A             ds.w    1        ; stores program ending memory address 
+OUT_START_A          ds.w    1        ; stores program ending memory address 
+OUT_CURR_A           ds.w    1        ; stores current memory address
+IS_VALID             ds.b    1        ; stores whether or not the code is valid
 
 BAD_COMMAND_STR DC.B  'DATA $',0
 

@@ -14,6 +14,9 @@ BAD_COMMAND_SUB
         * we do this char by char (byte by byte) until we see a NULL (0)
         * in NOP_STR
 
+        * the code is invalid of we find a bad command
+        MOVE.B    #0,IS_VALID
+
 BCMD_COPY
         TST.B     (A4)  ; test the contents of A4
         BEQ       BCMD_DONE  ; if we hit a 00, we're done copying
