@@ -1,9 +1,10 @@
-*
+*------------------------------------------------------------------------------
 * This is a skeleton to help write all the _SUP files
 *
 * basically here's how they all work:
 *
 * IN_CURRENT_A contains the address of the current op-code we're looking at
+* and re-constructing into the command
 *
 * right after it are any immediate values and/or addresses in the command
 *
@@ -16,7 +17,7 @@
 *   MOVE.B  $__,(A3)+
 * 
 * also, replace ### with the name of the command, all variables and labels are
-* global in binary, so each one has to be 100% unique
+* global in assembly, so each one has to be 100% unique
 *
 * things like
 *
@@ -29,6 +30,7 @@
 *     func();
 *
 * don't work here
+*------------------------------------------------------------------------------
 
 ###_SUB
         MOVEM.L   D0-D7/A0-A6,-(SP) ; move the old registers onto the stack
