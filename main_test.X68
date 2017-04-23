@@ -25,6 +25,9 @@ START:                  ; first instruction of program
     MOVE.W      IN_START_A,IN_CURR_A
     MOVE.W      #$3006,IN_END_A
 
+    MOVE.W      #$4000,OUT_START_A
+    MOVE.W      OUT_START_A,OUT_CURR_A
+
     MOVE.W      #$4E70,$3000
     MOVE.W      #$3456,$3002
     MOVE.W      #$4E70,$3004
@@ -55,8 +58,8 @@ ADD_TOO_BIG          dc.b    'Address above maximum. enter address less than or 
 IN_START_A           ds.w    1        ; stores program starting memory address 
 IN_CURR_A            ds.w    1         ; stores current memory address
 IN_END_A             ds.w    1         ; stores program ending memory address 
+OUT_START_A          ds.w    1         ; stores program ending memory address 
 OUT_CURR_A           ds.w    1         ; stores current memory address
-OUT_END_A            ds.w    1         ; stores program ending memory address 
 
     END    START        ; last line of source
 
