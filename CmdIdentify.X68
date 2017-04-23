@@ -58,9 +58,8 @@ CMD_CHECK
         CMP.W     D4,D2      ; compare the result with the signature of the cmd
         BNE       NEGATIVE   ; if they don't match skip everything else
 
-        LEA       SUB_NUM,A1 ; make A1 place in memory
-        MOVE.L    D5,(A1)
-        JSR       NOP_SUB        ; jump to the subroutine at D5
+        MOVEA.L   D5,A1
+        JSR       (A1)        ; jump to the subroutine at D5
         MOVE.B    #1,D6
  
 NEGATIVE
@@ -71,10 +70,6 @@ NEGATIVE
 
         INCLUDE 'BAD_COMMAND.X68'
         INCLUDE 'NOP_SUB.X68'
-
-SUB_NUM   DS.W  1 ; allocate a bit of memory for the subroutine 
-                  ; JSR can only do (An) and immediate values, so we set A1 to
-                  ; this, put the data here and JSR's happy
 
 * BAD_COMMAND_STR DC.B  'DATA $',0
 
