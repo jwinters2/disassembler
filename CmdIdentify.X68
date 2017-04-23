@@ -16,13 +16,14 @@ CMD_IDENTIFY
 
         MOVEM.L   D0-D7/A0-A6,-(SP) ; move the old registers onto the stack
   
-        MOVEA.L   #IN_CURR_A,A1 ; A1 is a pointer to the current opcode
-        MOVE.W    (A1),D1       ; D1 is the value of that opcode
+        MOVEA.L   #IN_CURR_A,A1 ; A1 is a pointer to the current position
+        MOVEA.W   (A1),A2       ; A2 is the opcode at that position
+        MOVE.W    (A2),D1       ; D1 is the current opcode
         
         * check NOP
         MOVE.W    D1,D2        ; move the value into D2 for temp storage
-        MOVE.W    #NOP_S,D3    ; move values into registers for CMD_CHECK
-        MOVE.W    #NOP_P,D4  
+        MOVE.W    #NOP_P,D3    ; move values into registers for CMD_CHECK
+        MOVE.W    #NOP_S,D4  
         MOVE.W    #NOP_SUB,D5
         JSR       CMD_CHECK
 
@@ -47,7 +48,7 @@ CMD_CHECK
         BNE       NEGATIVE   ; if they don't match skip everything else
 
         MOVEA.L   #SUB_NUM,A1 ; make A1 place in memory
-        MOVE.W    D5,(A1)
+        MOVE.L    D5,(A1)
         JSR       (A1)        ; jump to the subroutine at D5
         MOVE.B    #1,D6
  

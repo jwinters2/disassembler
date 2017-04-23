@@ -26,7 +26,7 @@ START:                  ; first instruction of program
     MOVE.W      #$3006,IN_END_A
 
     MOVE.W      #$4E70,$3000
-    MOVE.W      #$4E70,$3002
+    MOVE.W      #$3456,$3002
     MOVE.W      #$4E70,$3004
     MOVE.W      #$4E70,$3006
 
