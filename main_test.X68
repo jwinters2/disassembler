@@ -28,11 +28,11 @@ START:                  ; first instruction of program
     MOVE.W      #$4000,OUT_START_A
     MOVE.W      OUT_START_A,OUT_CURR_A
 
-    MOVE.W      #$4E70,$3000
-  * MOVE.W      #$4E70,$3002
+    MOVE.W      #$4E71,$3000
+  * MOVE.W      #$4E71,$3002
     MOVE.W      #$3456,$3002
-    MOVE.W      #$4E70,$3004
-    MOVE.W      #$4E70,$3006
+    MOVE.W      #$4E71,$3004
+    MOVE.W      #$4E71,$3006
 
 LOOP
     JSR         CMD_IDENTIFY
@@ -72,11 +72,12 @@ OUT_START_A          ds.w    1        ; stores program ending memory address
 OUT_CURR_A           ds.w    1        ; stores current memory address
 IS_VALID             ds.b    1        ; stores whether or not the code is valid
 
-BAD_COMMAND_STR DC.B  'DATA $',0
+    INCLUDE 'CONSTANTS.X68'
+* BAD_COMMAND_STR DC.B  'DATA $',0
 
-NOP_STR DC.B  'NOP',$0A,$0D,0
-NOP_S   EQU   $4E70
-NOP_P   EQU   $FFFF
+* NOP_STR DC.B  'NOP',$0A,$0D,0
+* NOP_S   EQU   $4E71
+* NOP_P   EQU   $FFFF
 
 
     END    START        ; last line of source
