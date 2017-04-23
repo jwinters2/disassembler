@@ -26,9 +26,20 @@ CMD_IDENTIFY
         MOVE.W    #NOP_S,D4  
         MOVE.W    #NOP_SUB,D5
         JSR       CMD_CHECK
-
         CMP.B     #1,D6         ; check the answer CMD_CHECK gave us
         BEQ       END_IDENTIFY  ; skip to the end if it's equal
+
+        * check MOVE
+      * MOVE.W    D1,D2        ; move the value into D2 for temp storage
+      * MOVE.W    #MOVE_P,D3    ; move values into registers for CMD_CHECK
+      * MOVE.W    #MOVE_S,D4  
+      * MOVE.W    #MOVE_SUB,D5
+      * JSR       CMD_CHECK
+      * CMP.B     #1,D6         ; check the answer CMD_CHECK gave us
+      * BEQ       END_IDENTIFY  ; skip to the end if it's equal
+        
+        * if we hit here it's not a valid command
+        JSR       BAD_COMMAND_SUB
 
 END_IDENTIFY
 
@@ -47,7 +58,7 @@ CMD_CHECK
         CMP.W     D4,D2      ; compare the result with the signature of the cmd
         BNE       NEGATIVE   ; if they don't match skip everything else
 
-        MOVEA.L   #SUB_NUM,A1 ; make A1 place in memory
+        LEA       SUB_NUM,A1 ; make A1 place in memory
         MOVE.L    D5,(A1)
         JSR       NOP_SUB        ; jump to the subroutine at D5
         MOVE.B    #1,D6
@@ -58,10 +69,17 @@ NEGATIVE
 
 * ------------------------------------------------------------------------------
 
+        INCLUDE 'BAD_COMMAND.X68'
+        INCLUDE 'NOP_SUB.X68'
+
 SUB_NUM   DS.W  1 ; allocate a bit of memory for the subroutine 
                   ; JSR can only do (An) and immediate values, so we set A1 to
                   ; this, put the data here and JSR's happy
 
-        INCLUDE 'NOP_SUB.X68'
+* BAD_COMMAND_STR DC.B  'DATA $',0
+
+* NOP_STR DC.B  'NOP',$0A,$0D,0
+* NOP_S   EQU   $4E70
+* NOP_P   EQU   $FFFF
 
 * ------------------------------------------------------------------------------

@@ -36,11 +36,20 @@ START:                  ; first instruction of program
 LOOP
     JSR         CMD_IDENTIFY
     MOVE.W      IN_CURR_A,D1
-    CMP.W       IN_END_A,D1
-    BEQ         END_LOOP
+    MOVE.W      IN_END_A,D2
+    CMP.W       D2,D1
+    BGT         END_LOOP
     BRA         LOOP
 
 END_LOOP
+
+    * add a 00 to the very end of the output
+    MOVEA.W   OUT_CURR_A,A1
+    MOVE.B    #0,(A1)+
+
+    MOVEA.W   OUT_START_A,A1
+    MOVE.B    #13,D0
+    TRAP      #15
 
     SIMHALT             ; halt simulator
 
@@ -60,6 +69,12 @@ IN_CURR_A            ds.w    1         ; stores current memory address
 IN_END_A             ds.w    1         ; stores program ending memory address 
 OUT_START_A          ds.w    1         ; stores program ending memory address 
 OUT_CURR_A           ds.w    1         ; stores current memory address
+
+BAD_COMMAND_STR DC.B  'DATA $',0
+
+NOP_STR DC.B  'NOP',$0A,$0D,0
+NOP_S   EQU   $4E70
+NOP_P   EQU   $FFFF
 
     END    START        ; last line of source
 
