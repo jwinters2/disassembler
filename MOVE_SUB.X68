@@ -21,12 +21,12 @@ MOVE_SUB
         * D1 - the actual opcode
         *
         MOVEA.L   #0,A1             ; load the current opcode into a register
-        MOVEA.W   IN_CURR_A,A1
+        MOVEA.L   IN_CURR_A,A1
         
         MOVE.W    (A1)+,D1          ; ***move A1 to next command or to parameter
 
         MOVEA.L   #0,A3
-        MOVEA.W   OUT_CURR_A,A3 ; move the current output pointer to A3
+        MOVEA.L   OUT_CURR_A,A3 ; move the current output pointer to A3
         LEA       MOVE_STR,A4     ; move the to-be-printed string to A4
 
         * we need to append the string at ###_STR to the output string
@@ -102,8 +102,8 @@ MOVE_AMODE
 MOVE_FIN 
         MOVE.B  #$A,(A3)+
         MOVE.B  #$D,(A3)+       
-        MOVE.W    A1,IN_CURR_A  ; move the current A1 back to the input pointer
-        MOVE.W    A3,OUT_CURR_A ; move the current A3 back to the output pointer
+        MOVE.L    A1,IN_CURR_A  ; move the current A1 back to the input pointer
+        MOVE.L    A3,OUT_CURR_A ; move the current A3 back to the output pointer
 
         MOVEM.L   (SP)+,D0-D7/A0-A6 ; move the old registers back to the stack
         RTS       ; return
@@ -156,6 +156,7 @@ MOVE_ABSW_LOOP    JSR MOVE_GETBYTE
                   BRA MOVE_AMODE
 MOVE_ABSL
                   MOVE.B  #'$',(A3)+
+               
 MOVE_ABSL_LOOP    JSR MOVE_GETBYTE
                   ADDQ.B    #1,D3
                   CMP.B     #4,D3
@@ -170,7 +171,7 @@ MOVE_IMM
                   BEQ   MOVE_IMML_LOOP
 MOVE_IMMW_LOOP    JSR MOVE_GETBYTE
                   ADDQ.B    #1,D3
-                  CMP.B     #4,D3
+                  CMP.B     #2,D3
                   BNE   MOVE_IMMW_LOOP
                   BRA MOVE_AMODE                  
 MOVE_IMML_LOOP    JSR MOVE_GETBYTE
@@ -183,14 +184,21 @@ MOVE_GETBYTE
     MOVE.B  D5,D6
     AND.B   #$F0,D6
     LSR.B   #4,D6
-    ADD.B   #$30,D6
+    JSR MOVE_CONVERT
     MOVE.B  D6,(A3)+
     MOVE.B  D5,D6
     AND.B   #$F,D6
-    ADD.B   #$30,D6
+    JSR MOVE_CONVERT
     MOVE.B  D6,(A3)+
     RTS
-
+MOVE_CONVERT
+    CMP.B   #10,D6
+    BLT MOVE_DIGIT
+    ADD.B   #$37,D6
+    RTS
+MOVE_DIGIT
+    ADD.B #$30,D6
+    RTS    
 
 
 
@@ -209,6 +217,7 @@ MOVE_ABSWD_LOOP    JSR MOVE_GETBYTE
                   BRA MOVE_FIN
 MOVE_ABSLD
                   MOVE.B  #'$',(A3)+
+                
 MOVE_ABSLD_LOOP    JSR MOVE_GETBYTE
                   ADDQ.B    #1,D3
                   CMP.B     #4,D3
@@ -245,9 +254,6 @@ PRINTPA    ;takes value in D7 and prints -(A#)
         MOVE.B  #'A',(A3)+
         JSR PRINTNUM
         MOVE.B  #')',(A3)+
-
-        MOVE.B  #$0A,(A3)+
-        MOVE.B  #$0D,(A3)+
         RTS                
 *size helpers       
 MOVE_B
@@ -267,6 +273,7 @@ MOVE_L
         MOVE.B  #$09,(A3)+
         BRA MOVE_XMODE
       
+
 
 
 

@@ -8,11 +8,11 @@ BAD_COMMAND_SUB
         MOVEM.L   D0-D7/A0-A6,-(SP) ; move the old registers onto the stack
 
         MOVEA.L   #0,A1             ; load the current opcode into a register
-        MOVEA.W   IN_CURR_A,A1
+        MOVEA.L   IN_CURR_A,A1
         MOVE.W    (A1)+,D1          ; not necessary here, but for other cmds
 
         MOVEA.L   #0,A3
-        MOVEA.W   OUT_CURR_A,A3 ; move the current output pointer to A3
+        MOVEA.L   OUT_CURR_A,A3 ; move the current output pointer to A3
         LEA       BAD_COMMAND_STR,A4 ; move the to-be-printed string to A4
 
         * we need to append the string at NOP_STR to the output string
@@ -64,8 +64,8 @@ BCMD_DONE
         MOVE.B    #$0A,(A3)+
         MOVE.B    #$0D,(A3)+
 
-        MOVE.W    A1,IN_CURR_A  ; move the current A1 back to the input pointer
-        MOVE.W    A3,OUT_CURR_A ; move the current A3 back to the output pointer
+        MOVE.L    A1,IN_CURR_A  ; move the current A1 back to the input pointer
+        MOVE.L    A3,OUT_CURR_A ; move the current A3 back to the output pointer
 
         MOVEM.L   (SP)+,D0-D7/A0-A6 ; move the old registers back to the stack
         RTS       ; return

@@ -22,24 +22,32 @@ START:                  ; first instruction of program
    
     MOVE.B      #1,IS_VALID ; at the beginning assume the code is valid
 
-    MOVE.W      #$3000,IN_START_A
-    MOVE.W      IN_START_A,IN_CURR_A
-    MOVE.W      #$300A,IN_END_A
+    MOVE.L      #$3000,IN_START_A
+    MOVE.L      IN_START_A,IN_CURR_A
+    MOVE.L      #$301A,IN_END_A
 
-    MOVE.W      #$4000,OUT_START_A
-    MOVE.W      OUT_START_A,OUT_CURR_A
+    MOVE.L      #$4000,OUT_START_A
+    MOVE.L      OUT_START_A,OUT_CURR_A
 
     MOVE.W      #$4E71,$3000
     MOVE.W      #$4E71,$3002
-    MOVE.W      #$383C,$3004
-    MOVE.W      #$0000,$3006
-    MOVE.W      #$012F,$3008
-    MOVE.W      #$4E71,$300A
+    MOVE.W      #$2401,$3004
+    MOVE.W      #$2A0A,$3006
+    MOVE.W      #$2C1B,$3008
+    MOVE.W      #$21FC,$300A
+    MOVE.W      #$0000,$300C
+    MOVE.W      #$1234,$300E
+    MOVE.W      #$4000,$3010
+    MOVE.W      #$3E3C,$3012
+    MOVE.W      #$1234,$3014
+    MOVE.W      #$1E3C,$3016
+    MOVE.W      #$00CD,$3018
+    MOVE.W      #$4E71,$301A
 
 LOOP
     JSR         CMD_IDENTIFY
-    MOVE.W      IN_CURR_A,D1
-    MOVE.W      IN_END_A,D2
+    MOVE.L      IN_CURR_A,D1
+    MOVE.L      IN_END_A,D2
     CMP.W       D2,D1
     BGT         END_LOOP
     BRA         LOOP
@@ -47,10 +55,10 @@ LOOP
 END_LOOP
 
     * add a 00 to the very end of the output
-    MOVEA.W   OUT_CURR_A,A1
+    MOVEA.L   OUT_CURR_A,A1
     MOVE.B    #0,(A1)+
 
-    MOVEA.W   OUT_START_A,A1
+    MOVEA.L   OUT_START_A,A1
     MOVE.B    #13,D0
     TRAP      #15
 
@@ -67,11 +75,11 @@ INPUT_FAIL_MSG       dc.b    'Invalid address entered. Please try again.',CR,LF,
 END_ADD_SMALLER_MSG  dc.b    'End address can not be less than starting address',CR,LF,0
 ADD_TOO_SMALL        dc.b    'Address below minimum. enter address greater than or equal to $7000',CR,LF,0
 ADD_TOO_BIG          dc.b    'Address above maximum. enter address less than or equal to $FFFFFFFE',CR,LF,0
-IN_START_A           ds.w    1        ; stores program starting memory address 
-IN_CURR_A            ds.w    1        ; stores current memory address
-IN_END_A             ds.w    1        ; stores program ending memory address 
-OUT_START_A          ds.w    1        ; stores program ending memory address 
-OUT_CURR_A           ds.w    1        ; stores current memory address
+IN_START_A           ds.l    1        ; stores program starting memory address 
+IN_CURR_A            ds.l    1        ; stores current memory address
+IN_END_A             ds.l    1        ; stores program ending memory address 
+OUT_START_A          ds.l    1        ; stores program ending memory address 
+OUT_CURR_A           ds.l    1        ; stores current memory address
 IS_VALID             ds.b    1        ; stores whether or not the code is valid
 
     INCLUDE 'CONSTANTS.X68'

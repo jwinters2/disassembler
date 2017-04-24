@@ -18,7 +18,7 @@ CMD_IDENTIFY
         MOVEM.L   D0-D7/A0-A6,-(SP) ; move the old registers onto the stack
   
         MOVEA.L   #0,A1
-        MOVEA.W   IN_CURR_A,A1  ; A1 is a pointer to the current position
+        MOVEA.L   IN_CURR_A,A1  ; A1 is a pointer to the current position
         MOVE.W    (A1),D1       ; D1 is the current opcode
 
         * check MOVE
