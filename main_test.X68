@@ -24,16 +24,17 @@ START:                  ; first instruction of program
 
     MOVE.W      #$3000,IN_START_A
     MOVE.W      IN_START_A,IN_CURR_A
-    MOVE.W      #$3006,IN_END_A
+    MOVE.W      #$300A,IN_END_A
 
     MOVE.W      #$4000,OUT_START_A
     MOVE.W      OUT_START_A,OUT_CURR_A
 
     MOVE.W      #$4E71,$3000
-  * MOVE.W      #$4E71,$3002
-    MOVE.W      #$3456,$3002
-    MOVE.W      #$4E71,$3004
-    MOVE.W      #$4E71,$3006
+    MOVE.W      #$4E71,$3002
+    MOVE.W      #$383C,$3004
+    MOVE.W      #$0000,$3006
+    MOVE.W      #$012F,$3008
+    MOVE.W      #$4E71,$300A
 
 LOOP
     JSR         CMD_IDENTIFY

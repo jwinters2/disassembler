@@ -245,6 +245,9 @@ PRINTPA    ;takes value in D7 and prints -(A#)
         MOVE.B  #'A',(A3)+
         JSR PRINTNUM
         MOVE.B  #')',(A3)+
+
+        MOVE.B  #$0A,(A3)+
+        MOVE.B  #$0D,(A3)+
         RTS                
 *size helpers       
 MOVE_B
