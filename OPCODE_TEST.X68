@@ -1,7 +1,8 @@
 *-----------------------------------------------------------
-* Title      :OPCODE_TEST
-* Written by :weMissJava
-* Date       :4/21/17
+* Title      : OPCODE_TEST
+* Version    : 1 (23 Apr 2017)
+* Written by : weMissJava
+* Date       : 4/21/17
 * Description: Test file containing required opcodes for 
 *              disassembling. 
 *-----------------------------------------------------------

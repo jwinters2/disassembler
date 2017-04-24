@@ -1,7 +1,8 @@
 * -----------------------------------------------------------------------------
 * CMD_IDENTIFY subroutine
 *
-* Author: James Winters of WeMissJava
+* Author  : James Winters of WeMissJava
+* Version : 1 (23 Apr 2017)
 *
 * CSS 422
 *
@@ -19,6 +20,15 @@ CMD_IDENTIFY
         MOVEA.L   #0,A1
         MOVEA.W   IN_CURR_A,A1  ; A1 is a pointer to the current position
         MOVE.W    (A1),D1       ; D1 is the current opcode
+
+        * check MOVE
+        MOVE.W    D1,D2        ; move the value into D2 for temp storage
+        MOVE.W    #MOVE_P,D3    ; move values into registers for CMD_CHECK
+        MOVE.W    #MOVE_S,D4  
+        MOVE.W    #MOVE_SUB,D5
+        JSR       CMD_CHECK
+        CMP.B     #1,D6         ; check the answer CMD_CHECK gave us
+        BEQ       END_IDENTIFY  ; skip to the end if it's equal
         
         * check NOP
         MOVE.W    D1,D2        ; move the value into D2 for temp storage
@@ -29,15 +39,6 @@ CMD_IDENTIFY
         CMP.B     #1,D6         ; check the answer CMD_CHECK gave us
         BEQ       END_IDENTIFY  ; skip to the end if it's equal
 
-        * check MOVE
-      * MOVE.W    D1,D2        ; move the value into D2 for temp storage
-      * MOVE.W    #MOVE_P,D3    ; move values into registers for CMD_CHECK
-      * MOVE.W    #MOVE_S,D4  
-      * MOVE.W    #MOVE_SUB,D5
-      * JSR       CMD_CHECK
-      * CMP.B     #1,D6         ; check the answer CMD_CHECK gave us
-      * BEQ       END_IDENTIFY  ; skip to the end if it's equal
-        
         * if we hit here it's not a valid command
         JSR       BAD_COMMAND_SUB
 
@@ -69,6 +70,7 @@ NEGATIVE
 * ------------------------------------------------------------------------------
 
         INCLUDE 'BAD_COMMAND.X68'
+        INCLUDE 'MOVE_SUB.X68'
         INCLUDE 'NOP_SUB.X68'
 
 * BAD_COMMAND_STR DC.B  'DATA $',0

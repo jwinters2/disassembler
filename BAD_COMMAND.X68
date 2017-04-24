@@ -1,3 +1,8 @@
+* ------------------------------------------------------------------------------
+* BAD_COMMAND_SUB
+* VERSION 1 (23 APR 2017)
+* Written by James Winters
+* ------------------------------------------------------------------------------
 
 BAD_COMMAND_SUB
         MOVEM.L   D0-D7/A0-A6,-(SP) ; move the old registers onto the stack
