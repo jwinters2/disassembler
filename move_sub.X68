@@ -156,6 +156,7 @@ MOVE_ABSW_LOOP    JSR MOVE_GETBYTE
                   BRA MOVE_AMODE
 MOVE_ABSL
                   MOVE.B  #'$',(A3)+
+               
 MOVE_ABSL_LOOP    JSR MOVE_GETBYTE
                   ADDQ.B    #1,D3
                   CMP.B     #4,D3
@@ -170,7 +171,7 @@ MOVE_IMM
                   BEQ   MOVE_IMML_LOOP
 MOVE_IMMW_LOOP    JSR MOVE_GETBYTE
                   ADDQ.B    #1,D3
-                  CMP.B     #4,D3
+                  CMP.B     #2,D3
                   BNE   MOVE_IMMW_LOOP
                   BRA MOVE_AMODE                  
 MOVE_IMML_LOOP    JSR MOVE_GETBYTE
@@ -183,14 +184,21 @@ MOVE_GETBYTE
     MOVE.B  D5,D6
     AND.B   #$F0,D6
     LSR.B   #4,D6
-    ADD.B   #$30,D6
+    JSR MOVE_CONVERT
     MOVE.B  D6,(A3)+
     MOVE.B  D5,D6
     AND.B   #$F,D6
-    ADD.B   #$30,D6
+    JSR MOVE_CONVERT
     MOVE.B  D6,(A3)+
     RTS
-
+MOVE_CONVERT
+    CMP.B   #10,D6
+    BLT MOVE_DIGIT
+    ADD.B   #$37,D6
+    RTS
+MOVE_DIGIT
+    ADD.B #$30,D6
+    RTS    
 
 
 
@@ -209,6 +217,7 @@ MOVE_ABSWD_LOOP    JSR MOVE_GETBYTE
                   BRA MOVE_FIN
 MOVE_ABSLD
                   MOVE.B  #'$',(A3)+
+                
 MOVE_ABSLD_LOOP    JSR MOVE_GETBYTE
                   ADDQ.B    #1,D3
                   CMP.B     #4,D3
@@ -264,6 +273,7 @@ MOVE_L
         MOVE.B  #$09,(A3)+
         BRA MOVE_XMODE
       
+
 
 
 
