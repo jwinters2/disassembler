@@ -6,7 +6,6 @@
 *               defines valid-flag (1 for code valid 0 for code invalid),defines constants for start and end 
 *               address of the program ,Sets out current add to out -start- add, Starts id running instruction
 *-----------------------------------------------------------
-
 CR              EQU     $0D                 ASCII code for carriage return
 LF              EQU     $0A                 ASCII code  for line feed  
 
@@ -24,13 +23,13 @@ RD_START_INPUT  LEA     START_ADD_MSG,A1    load start address request msg
                 MOVE.W  #14,D0              print data in d0 to screen 
                 TRAP    #15                 run task 14
                 
-                LEA     IN_START_ADD,A1     load starting adresss input from user 
+                LEA     IN_START_A,A1     load starting adresss input from user 
                 MOVE.B  #2,D0               read string from key board and store it in A1
                 TRAP    #15                 run task 2
                 JSR     CK_INPUT_SIZE       check that input length is between 1-8 characters
                 CMP     #1,D3               is input length ok?    
                 BEQ     CONTINUE_START1     length ok ,keep on reading input 
-                
+                JSR     INVALID_INP_ST       bad input length , display error and start over    
 CONTINUE_START1 JSR     CONVERT             go to conversion subroutine
                 JSR     MIN_MAX_CHECK       check if input is within the min& max limit for address 
                 CMP.B   #1,D2               is input address within allowable interval
@@ -40,27 +39,64 @@ CONTINUE_START1 JSR     CONVERT             go to conversion subroutine
 CONTINUE_START2 JSR     EVEN_CHECK          verify  input adress is even    
                 CMP.B   #1,D2               is input address even?
                 BNE     RD_START_INPUT      input not even , ask for input again
-                MOVEA.L  D6,A2              start adress passed all input tests,save it in A2
+                MOVEA.L  D6,A2              start adress passed all input tests,save start address in A2
+                
+RD_END_INPUT    LEA     END_ADD_MSG,A1      load end address request msg
+                MOVE.W  #14,D0              display string at A1
+                TRAP    #15                 run task 14
+                
+                LEA     IN_END_A,A1     load starting adresss input from user 
+                MOVE.B  #2,D0               read string from key board and store it in A1
+                TRAP    #15                 run task 2
+                
+                JSR     CK_INPUT_SIZE       check that input length is between 1-8 characters
+                CMP     #1,D3               is input length ok?    
+                BEQ     CONTINUE_END1       length ok ,keep on reading input 
+                JSR     INVALID_INP_ED
+                
+CONTINUE_END1   JSR     CONVERT             go to conversion subroutine
+                JSR     MIN_MAX_CHECK       check if input is within the min& max limit for address 
+                CMP.B   #1,D2               is input address within allowable interval
+                BEQ     CONTINUE_END2     input is within limits, keep reading
+                BNE     RD_END_INPUT  
+                
+CONTINUE_END2   JSR     EVEN_CHECK          verify  input adress is even    
+                CMP.B   #1,D2               is input address even?
+                BNE     RD_END_INPUT      input not even , ask for input again
+                MOVEA.L  D6,A3              start adress passed all input tests,save start address in A2
+                MOVE.L  A2,IN_START_A       copy start input to IN_START_A
+                MOVE.L  A3,IN_END_A         copy end input to IN_END_A
+                
+MAIN_LOOP       CMP.L   IN_CURRENT_A,IN_END_A     IS CURRENT LESS THAN END?               
+                BLE     IDINSRUCTION              go to idinstruction
+                simHalt
+
 * check input string length is 1 minimum and 8 max
 
 CK_INPUT_SIZE   MOVE.L  #0,D2               set d2 to zero 
                 MOVE.L  #0,D3               set d3 to zero 
-                CMP.B   D2,D1              IS string length zero?
-                BEQ     INVALID_INPUT      length is 0, print input error message 
-                CMPI.B  #$8,D1             compare string length to 8
-                BGT     INVALID_INPUT      input greater than 8 chrs ,display error message
-                MOVE.B  #1,D3              save 1 in d3 meaning input size is ok  
+                MOVE.L  #8,D4
+                CMP.W   D2,D1              IS string length zero?
+                BEQ     INVALID_INP_ST      length is 0, print input error message 
+                CMP.B   D4,D1             compare string length to 8
+                BGT     INVALID_INP_ST       input greater than 8 chrs ,display error message
+                MOVE.B  #1,D3              save 1 in d3 meaning input size is ok 
+                *CLR.L   D1 
                 RTS
  *print invalid input error message 
    
-INVALID_INPUT   LEA     INPUT_ERROR_MSG,A1  load input error message to A1
+INVALID_INP_ST  LEA     INPUT_ERROR_MSG,A1  load input error message to A1
                 MOVE.W  #14,D0              print data in d0 to screen 
                 TRAP    #15                 run task 14
                 BRA     RD_START_INPUT      prompt user for input again
-
+ 
+INVALID_INP_ED  LEA     INPUT_ERROR_MSG,A1  load input error message to A1
+                MOVE.W  #14,D0              print data in d0 to screen 
+                TRAP    #15                 run task 14
+                BRA     RD_END_INPUT      prompt user for input again
 *convert to ASCII
-CONVERT
-                CMP.B   #0,D1              are all characters of the input are converted?
+CONVERT         CLR.L    D6
+CNV_LOOP        CMP.B   #0,D1              are all characters of the input are converted?
                 BEQ     FINISH 
                 CLR.L   D4                 use cleared d4 for input storage
                 MOVE.B  (A1)+,D4           save the first character input in to D4   
@@ -79,11 +115,11 @@ DIGIT_TO_HEX    SUBI.B  #$30,D4            convert digit to hexadecimal number ,
 KEEP_COUNT      ADD.B   D4,D6              save the conversion in the hex holder D6
                 SUBI.B  #$1,D1             decrease the unconverted input count by 1 
                 CMPI.B  #$0,D1             are we done converting all input ?
-                BEQ     CONVERT            we are done counting , go to convert     
+                BEQ     CNV_LOOP           we are done counting , go to convert     
                 MOVE.L  #0,D5              set up D5=0 for later
                 ASL.L   #4,D6              shift d4 contents left by 4 to receive next input
                 ADD.B   D5,D6              adjust zeros 
-                BRA     CONVERT            updating the count is done go back to convert
+                BRA     CNV_LOOP           updating the count is done go back to convert
                 
 * check if user input is between the interval [$7000,FFFFFE]
                 
@@ -99,13 +135,16 @@ MIN_MAX_CHECK   MOVE.L  #0,D2               reset d2 to store data
 *display min & max errors to console                 
 BELOW_MIN_ERROR LEA     ADDR_BELOW_MSG,A1    load input address below min msg
                 MOVE    #14,D0               display the string at A1
-                TRAP    #15                  run task 14          
+                TRAP    #15                  run task 14  
+                RTS
 ABOVE_MAX_ERROR LEA     ADDR_ABOVE_MSG,A1    load input address above max msg 
                 MOVE    #14,D0               display the string at A1
-                TRAP    #15                  run task 14          
+                TRAP    #15                  run task 14 
+                RTS         
 *check if the input adress is even(odd not allowed)     
  
-EVEN_CHECK      ANDI.B  #1,D6                and input with bit one 
+EVEN_CHECK     MOVE.L   D6,D7
+                ANDI.B  #1,D7                and input with bit one 
                 BEQ.S   EVEN                 input is even
                 BRA     INPUT_ODD           input is odd ,display message
    
@@ -119,15 +158,17 @@ INPUT_ODD       LEA      EVEN_CHECK_MSG,A1   load odd address enteresd msg
                 
 WELCOME_MSG          dc.b    'Welcome to the MC68000 Microprocessor Disassembler',CR,LF,0   
 START_ADD_MSG        dc.b    'Please enter Start memory address in hexadecimal: ',0
-END_ADD_MSG          dc.b    'Please enter End memory address in hexadecimal(must be greater than start address): ',0
+END_ADD_MSG          dc.b    'Please enter End address in hexadecimal(greater than start address): ',0
 INPUT_ERROR_MSG      dc.b    'ERROR: Invalid address entered. Please try again.',CR,LF,0
 END_ADD_SMALLER_MSG  dc.b    'ERROR: End address can not be less than starting address',CR,LF,0
 ADDR_BELOW_MSG       dc.b    'ERROR: Address below minimum. enter address greater than or equal to $7000',CR,LF,0
 ADDR_ABOVE_MSG       dc.b    'ERROR: Address above maximum. enter address less than or equal to $00FFFFFE',CR,LF,0
 EVEN_CHECK_MSG        dc.b    'ERROR: odd address entered. please enter even address',CR,LF,0       
-IN_START_ADD         ds.b    4        allocate 4 bytes of memory to store starting memory address input  
-IN_CURRENT_ADD       ds.b    4        allocate 4 bytes of memory to store current memory address
-IN_END_ADD           ds.b    4        allocate 4 bytes of memory to store ending memory address input 
+IN_START_A           ds.b    4        allocate 4 bytes of memory to store starting memory address input  
+IN_CURRENT_A         ds.b    4        allocate 4 bytes of memory to store current memory address
+IN_END_A             ds.b    4        allocate 4 bytes of memory to store ending memory address input
+OUT_STRAT_A          ds.b    4         allocate 4 bytes of memory to store program output
+      
 
 
         
@@ -140,4 +181,3 @@ IN_END_ADD           ds.b    4        allocate 4 bytes of memory to store ending
      
 
     END    START        ; last line of source
-
