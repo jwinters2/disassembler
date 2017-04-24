@@ -21,12 +21,12 @@ MOVE_SUB
         * D1 - the actual opcode
         *
         MOVEA.L   #0,A1             ; load the current opcode into a register
-        MOVEA.W   IN_CURR_A,A1
+        MOVEA.L   IN_CURR_A,A1
         
         MOVE.W    (A1)+,D1          ; ***move A1 to next command or to parameter
 
         MOVEA.L   #0,A3
-        MOVEA.W   OUT_CURR_A,A3 ; move the current output pointer to A3
+        MOVEA.L   OUT_CURR_A,A3 ; move the current output pointer to A3
         LEA       MOVE_STR,A4     ; move the to-be-printed string to A4
 
         * we need to append the string at ###_STR to the output string
@@ -102,8 +102,8 @@ MOVE_AMODE
 MOVE_FIN 
         MOVE.B  #$A,(A3)+
         MOVE.B  #$D,(A3)+       
-        MOVE.W    A1,IN_CURR_A  ; move the current A1 back to the input pointer
-        MOVE.W    A3,OUT_CURR_A ; move the current A3 back to the output pointer
+        MOVE.L    A1,IN_CURR_A  ; move the current A1 back to the input pointer
+        MOVE.L    A3,OUT_CURR_A ; move the current A3 back to the output pointer
 
         MOVEM.L   (SP)+,D0-D7/A0-A6 ; move the old registers back to the stack
         RTS       ; return
